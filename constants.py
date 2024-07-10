@@ -1,2 +1,2 @@
 #REMOVE BOT TOKEN
-botToken = "MTI2MDQwMjQ3Mjc2MjIxNjQ2OA.GMImTH.GM9YzPmqMzfD284EAaluWJGdJBl1ARRpej_2F8"
+botToken = "process.env.botToken"
