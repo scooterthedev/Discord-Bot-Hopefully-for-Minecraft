@@ -1,29 +1,35 @@
 import constants
 import discord
-from discord.ext import commands
-import os
-import cog
+from discord import app_commands
+
+
+MY_GUILD = discord.Object(id=constants.guildID)
+
+
+class MyClient(discord.Client):
+    def __init__(self, *, intents: discord.Intents):
+        super().__init__(intents=intents)
+        self.tree = app_commands.CommandTree(self)
+
+
+    async def setup_hook(self):
+        self.tree.copy_global_to(guild=MY_GUILD)
+        await self.tree.sync(guild=MY_GUILD)
 
 
 intents = discord.Intents.default()
-intents.message_content = True
+client = MyClient(intents=intents)
 
-bot = commands.Bot(command_prefix="!", intents=intents)
 
-@bot.event
+@client.event
 async def on_ready():
-    await bot.tree.sync(guild=discord.Object(id=constants.guildID))
-    print(f'Logged in as {bot.user}')
+    await client.tree.sync(guild=discord.Object(id=constants.guildID))
+    print(f'Logged in as {client.user} (ID: {client.user.id})')
+    print('------')
 
-async def load():
-        bot.load_extension('C:\\Users\\yekut\\IdeaProjects\\Discord Bot\\venv\\cog\\hello.py')
-        await bot.tree.sync()
 
-@bot.command()
-@commands.is_owner()
-async def reload(ctx, extension):
-    bot.reload_extension(f'cogs.{extension}')
-    await ctx.send(f'Reloaded {extension}')
-    await self.tree.sync()
+@client.tree.command()
+async def soup(interaction: discord.Interaction):
+    await interaction.response.send_message(f'Hi, {interaction.user.mention}')
 
-bot.run(constants.botToken)
+client.run(constants.botToken)
